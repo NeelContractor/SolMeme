@@ -1,27 +1,12 @@
 "use client"
 import { sendPortalTransaction } from "@/app/api/actions";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { WalletConnectButton, WalletDisconnectButton, WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { PublicKey } from "@solana/web3.js";
 import { BarChart3, Eye, Filter, Flame, Search, TrendingUp, Zap } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react"
 import axios from "axios";
-
-interface CoinType {
-    id: number,
-    name: string,
-    symbol: string,
-    price: number,
-    change24h: number,
-    volume24h: number,
-    marketCap: number,
-    image: string,
-    holders: number,
-    liquidity: number,
-    trending: boolean,
-    new: boolean
-}
 
 export type TradeAction = 'buy' | 'sell';
 
@@ -32,7 +17,7 @@ interface FetchTokenInfo {
     decimals: number,
     extensions: {
         coingeckoId: string,
-    } | any,
+    },
     freeze_authority: string,
     logoURI: string,
     mint: string,
@@ -52,13 +37,11 @@ export default function MemeMarketplace() {
     const [selectedCoin, setSelectedCoin] = useState<FetchTokenInfo | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [sortBy, setSortBy] = useState('volume');
-    const [walletAddress, setWalletAddress] = useState("");
     const [activeTab, setActiveTab] = useState('trending');
     const [amount, setAmount] = useState<number>();
     const [tokenPrices, setTokenPrices] = useState<Record<string, number>>({});
     const { wallet, signTransaction } = useWallet();
     const [tokens, setTokens] = useState<FetchTokenInfo[] | null>(null);
-    console.log("tokenPrices :", tokenPrices);
 
     // const tokens = [
     //     { name: "Pepe", mint: "B5WTLaRwaUQpKk7ir1wniNB6m5o8GgMrimhKMYan2R6B" },
@@ -76,7 +59,6 @@ export default function MemeMarketplace() {
                 // const data = await res.json();
                 const res = await axios.get("/api/fetchTokens");
                 const data = await res.data;
-                console.log("Received tokens: ", data);
                 setTokens(data); // optional: store in state
               } catch (error) {
                 console.error("Failed to fetch tokens", error);
@@ -97,7 +79,6 @@ export default function MemeMarketplace() {
                   `https://lite-api.jup.ag/price/v2?ids=${t.mint}`
                 );
                 const data = await res.json();
-                console.log("data :", data);
                 const price = parseFloat(data.data[t.mint]?.price || "0");
                 priceMap[t.mint] = price;
               } catch (err) {
@@ -110,119 +91,6 @@ export default function MemeMarketplace() {
         
           fetchPrice();
     }, [tokens])
-
-    // Mock data for popular memecoins
-    const [memecoins] = useState([
-        {
-            id: 1,
-            name: 'PEPE Classic',
-            symbol: 'PEPE',
-            price: 0.000012,
-            change24h: 15.2,
-            volume24h: 2.4,
-            marketCap: 156.7,
-            image: 'https://pump.mypinata.cloud/ipfs/QmeSzchzEPqCU1jwTnsipwcBAeH7S4bmVvFGfF65iA1BY1',
-            holders: 45231,
-            liquidity: 12.3,
-            trending: true,
-            new: false
-        },
-        {
-            id: 2,
-            name: 'Doge Killer',
-            symbol: 'DOGKILL',
-            price: 0.00034,
-            change24h: -8.7,
-            volume24h: 1.8,
-            marketCap: 89.2,
-            image: 'https://pump.mypinata.cloud/ipfs/QmZiBGGbWn5NqEvXn9fkGn9cmiKC2ST4H4N6EyebkyERNX',
-            holders: 23456,
-            liquidity: 8.9,
-            trending: false,
-            new: true
-        },
-        {
-            id: 3,
-            name: 'Moon Ape',
-            symbol: 'MAPE',
-            price: 0.0045,
-            change24h: 234.5,
-            volume24h: 5.2,
-            marketCap: 234.1,
-            image: 'https://pump.mypinata.cloud/ipfs/QmY1yWdah8AtLBPV7td8w3tRunD1KhbxYqgLwattX67fHE',
-            holders: 67890,
-            liquidity: 18.7,
-            trending: true,
-            new: false
-        },
-        {
-            id: 4,
-            name: 'Rocket Cat',
-            symbol: 'RCAT',
-            price: 0.000089,
-            change24h: 45.3,
-            volume24h: 3.1,
-            marketCap: 123.4,
-            image: 'https://pump.mypinata.cloud/ipfs/QmUzxYUFYz8pCYw1rpVdE6LCtjERaowUs7xWUm2MVHg4No',
-            holders: 34567,
-            liquidity: 9.8,
-            trending: true,
-            new: true
-        },
-        {
-            id: 5,
-            name: 'Shiba Moon',
-            symbol: 'SHMOON',
-            price: 0.0002,
-            change24h: -12.4,
-            volume24h: 1.2,
-            marketCap: 67.8,
-            image: 'https://pump.mypinata.cloud/ipfs/QmcQYXo3jN2JeDmJx2DJtw2nJHwZUzH4LwCm8Q4k5sKwMj',
-            holders: 12345,
-            liquidity: 5.4,
-            trending: false,
-            new: false
-        },
-        {
-            id: 6,
-            name: 'Bonk Solana',
-            symbol: 'BONK',
-            price: 0.000045,
-            change24h: 78.9,
-            volume24h: 8.7,
-            marketCap: 345.6,
-            image: 'https://pump.mypinata.cloud/ipfs/QmPhDiEFov7shMhT6nHBpXokunPmN7WaZRwPZbKvgejymo',
-            holders: 89012,
-            liquidity: 25.6,
-            trending: true,
-            new: false
-        }
-    ]);
-
-    const filteredCoins = memecoins.filter(coin => 
-        coin.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        coin.symbol.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-    const sortedCoins = [...filteredCoins].sort((a, b) => {
-        switch (sortBy) {
-            case 'volume': 
-                return b.volume24h - a.volume24h;
-            case 'change': 
-                return b.volume24h - a.volume24h;
-            case 'marketCap': 
-                return b.volume24h - a.volume24h;
-            default:
-                return 0;
-        }
-    });
-
-    const formatNumber = (num: number) => {
-        if (num >= 1e9) return (num / 1e9).toFixed(1) + 'B';
-        if (num >= 1e9) return (num / 1e9).toFixed(1) + 'M';
-        if (num >= 1e9) return (num / 1e9).toFixed(1) + 'K';
-        return num.toString();
-    };
 
     const handleOnClick = async ({ action, mint }: { action: TradeAction, mint: string }) => {
         if (!wallet || !wallet.adapter.publicKey || !signTransaction) {
@@ -303,12 +171,12 @@ export default function MemeMarketplace() {
         </div>
     );
 
-    const CoinModal = ({ coin, onClose }: { coin: FetchTokenInfo, onClose: any }) => (
+    const CoinModal = ({ coin, onClose }: { coin: FetchTokenInfo, onClose: () => void }) => (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center space-x-4">
-                <img src={coin.logoURI} alt={coin.name} className="w-16 h-16 rounded-full" width={10} height={10} />
+                <Image src={coin.logoURI} alt={coin.name} className="w-16 h-16 rounded-full" width={10} height={10} />
                 <div>
                   <h2 className="text-2xl font-bold text-white">{coin.name}</h2>
                   <p className="text-gray-400">{coin.symbol}</p>

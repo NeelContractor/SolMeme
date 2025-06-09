@@ -1,7 +1,5 @@
 // /api/fetchTokens/route.ts
 
-import { NextRequest } from "next/server";
-
 const tokens = [
     { name: "Pepe", mint: "B5WTLaRwaUQpKk7ir1wniNB6m5o8GgMrimhKMYan2R6B" },
     { name: "SHMOO", mint: "9jMimgpDjD3utQa7QCSj9WNTCwaGGbz5MGHYM1oQpump" },
